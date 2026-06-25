@@ -190,47 +190,7 @@ const initWeatherWidget = () => {
 
 initWeatherWidget();
 
-// Text Reveal data-animation="words"
-const initGlobalWordAnimations = () => {
-  const elements = document.querySelectorAll('[data-animation="words"]');
-  if (!elements.length) return;
 
-  const observerOptions = {
-    root: null,
-    rootMargin: "0px 0px -15% 0px",
-    threshold: 0
-  };
-
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const target = entry.target;
-        const split = new SplitText(target, { type: "words" });
-        
-        gsap.fromTo(split.words, 
-          { 
-            opacity: 0, 
-            y: "0.3em" 
-          },
-          {
-            opacity: 1,
-            y: "0em",
-            duration: 0.6,
-            ease: "power2.out",
-            stagger: 0.03,
-            onComplete: () => {
-              split.revert();
-            }
-          }
-        );
-
-        observer.unobserve(target);
-      }
-    });
-  }, observerOptions);
-
-  elements.forEach(element => observer.observe(element));
-};
 
 initGlobalWordAnimations();
 
