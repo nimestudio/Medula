@@ -90,30 +90,6 @@ const initHeroAnimation = () => {
   }, "-=0.5");
 };
 
-// Navbar In / Out
-const initHomeNavBehavior = () => {
-  const menu = document.querySelector('.menu');
-  if (!menu) return;
-
-  gsap.set(menu, { scale: 0, opacity: 0 });
-
-  let triggered = false;
-
-  window.addEventListener('scroll', () => {
-    const threshold = window.innerHeight * 0.3;
-    const footer = document.querySelector('.footer');
-    const footerVisible = footer && footer.getBoundingClientRect().top < window.innerHeight;
-
-    if (window.scrollY >= threshold && !triggered && !footerVisible) {
-      triggered = true;
-      window.executeBounce(menu, 0.5);
-    } else if (window.scrollY < threshold && triggered) {
-      triggered = false;
-      gsap.to(menu, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" });
-    }
-  });
-};
-
 // Hero Bubble Animation
 const initBubbleAnimations = () => {
   const container = document.querySelector('.hero-bottom-bubbles');
