@@ -190,9 +190,46 @@ const initWeatherWidget = () => {
 
 initWeatherWidget();
 
+// Text Reveal data-animation="words"
+const initWordAnimations = () => {
+  document.querySelectorAll('[data-animation="words"]').forEach(el => {
+    gsap.set(el, { visibility: 'visible' });
 
+    const split = new SplitText(el, { type: 'words', tag: 'div', wordsClass: 'single-word-inner' });
 
-initGlobalWordAnimations();
+    split.words.forEach(word => {
+      const mask = document.createElement('span');
+      mask.className = 'single-word';
+      gsap.set(mask, { 
+        position: 'relative', 
+        display: 'inline-block', 
+        overflow: 'hidden', 
+        verticalAlign: 'bottom',
+        padding: '0.2em 0.05em',
+        margin: '-0.2em -0.05em'
+      });
+      word.parentNode.insertBefore(mask, word);
+      mask.appendChild(word);
+    });
+
+    gsap.set(split.words, { display: 'inline-block', yPercent: 100, opacity: 0 });
+
+    gsap.to(split.words, {
+      yPercent: 0,
+      opacity: 1,
+      duration: 0.8,
+      stagger: 0.05,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      }
+    });
+  });
+};
+
+initWordAnimations();
 
 // Nav In / Out
 const initGlobalNav = () => {
