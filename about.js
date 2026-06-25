@@ -45,23 +45,43 @@ const initBubbleAnimations = () => {
 
 // Hero text scroll
 const initHeroScroll = () => {
-  const section = document.querySelector('.about-hero-content');
-  if (!section) return;
+  let mm = gsap.matchMedia();
 
-  const scroller = section.querySelector('.about-hero-text-scroller');
-  if (!scroller) return;
+  mm.add("(min-width: 992px)", () => {
+    const section = document.querySelector('.about-hero-content');
+    if (!section) return;
 
-  gsap.to(scroller, {
-    x: () => -(scroller.scrollWidth - window.innerWidth),
-    ease: 'none',
-    scrollTrigger: {
-      trigger: section,
-      pin: true,
-      scrub: 1,
-      start: 'top top',
-      end: () => `+=${scroller.scrollWidth - window.innerWidth}`,
-      invalidateOnRefresh: true
-    }
+    const scroller = section.querySelector('.about-hero-text-scroller');
+    if (!scroller) return;
+
+    gsap.set(scroller, { position: "relative" });
+
+    gsap.fromTo(scroller, 
+      { left: "10vw" },
+      { 
+        left: "0vw", 
+        duration: 1.6, 
+        ease: "power3.out" 
+      }
+    );
+
+    gsap.to(scroller, {
+      x: () => -(scroller.scrollWidth - window.innerWidth),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        pin: true,
+        scrub: 1,
+        start: 'top top',
+        end: () => `+=${scroller.scrollWidth - window.innerWidth}`,
+        invalidateOnRefresh: true,
+        refreshPriority: 1
+      }
+    });
+
+    return () => {
+      gsap.set(scroller, { x: 0, left: "0vw" });
+    };
   });
 };
 
@@ -181,10 +201,12 @@ const initMethodScroll = () => {
       scrub: 1,
       start: 'top top',
       end: () => `+=${scroller.scrollWidth - window.innerWidth}`,
-      invalidateOnRefresh: true
+      invalidateOnRefresh: true,
+      refreshPriority: 1
     }
   });
 };
+
 
 // FAQ accordion
 const initFaqAccordion = () => {
@@ -237,6 +259,8 @@ const runAboutScripts = () => {
   initPictureDeck();
   initMethodScroll();
   initFaqAccordion();
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
 };
 
 if (document.readyState === "loading") {

@@ -398,29 +398,38 @@ initNavMenu();
   }
 
   // Footer Logo Animation
-  const footerBottom = document.querySelector(".footer-bottom");
-  if (footerBottom) {
-    const chars = footerBottom.querySelectorAll(".logo-char");
-    gsap.set(chars, { scaleY: 0.2, transformOrigin: "100% 100%" });
+const footerBottom = document.querySelector(".footer-bottom");
+if (footerBottom) {
+  const footerLogo = footerBottom.querySelector(".footer-logo");
+  if (footerLogo) {
+    gsap.set(footerLogo, { 
+      scaleY: 0.2, 
+      yPercent: 30,
+      transformOrigin: "100% 100%", 
+      pointerEvents: "none" 
+    });
+    
+    const logoShapes = footerLogo.querySelectorAll("path, g, [class*='char']");
+    if (logoShapes.length) {
+      gsap.set(logoShapes, { pointerEvents: "auto" });
+    }
 
     const logoObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          gsap.to(chars, {
+          gsap.to(footerLogo, {
             scaleY: 1,
             transformOrigin: "100% 100%",
-            ease: "back.out(3)",
+            ease: "back.out(1.4)",
             duration: 0.8,
-            stagger: 0.12,
             overwrite: "auto"
           });
         } else if (entry.boundingClientRect.top > 0) {
-          gsap.to(chars, {
+          gsap.to(footerLogo, {
             scaleY: 0.2,
             transformOrigin: "100% 100%",
             ease: "power2.out",
             duration: 0.4,
-            stagger: 0.05,
             overwrite: "auto"
           });
         }
@@ -430,7 +439,26 @@ initNavMenu();
     });
 
     logoObserver.observe(footerBottom);
+
+    footerLogo.addEventListener("mouseenter", () => {
+      gsap.to(footerLogo, {
+        y: "8px",
+        ease: "back.out(1.2)",
+        duration: 0.4,
+        overwrite: "auto"
+      });
+    });
+
+    footerLogo.addEventListener("mouseleave", () => {
+      gsap.to(footerLogo, {
+        y: "0px",
+        ease: "back.out(1.2)",
+        duration: 0.4,
+        overwrite: "auto"
+      });
+    });
   }
+}
 
   // Button hover
 document.querySelectorAll('.button').forEach(button => {

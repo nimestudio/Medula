@@ -42,7 +42,16 @@ const initHeroAnimation = () => {
       opacity: 1,
       y: 0,
       duration: 0.8,
-      ease: "elastic.out(1, 0.5)"
+      ease: "elastic.out(1, 0.5)",
+      onComplete: () => {
+        gsap.to(spikeWrap, {
+          y: "-0.5rem",
+          duration: 3,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1
+        });
+      }
     }, "-=0.25");
   }
 
@@ -247,7 +256,8 @@ const initProjectScroll = () => {
           scrub: 1,
           start: 'top top',
           end: () => `+=${images.scrollWidth - window.innerWidth}`,
-          invalidateOnRefresh: true
+          invalidateOnRefresh: true,
+          refreshPriority: 1
         }
       });
     });
@@ -275,8 +285,9 @@ const initHomePricesAnimation = () => {
   const cardsContainer = document.querySelector('.home-prices-cards');
   const pinkCard = document.querySelector('.home-price-card.pink-card');
   const greenCard = document.querySelector('.home-price-card.green-card');
+  const titleWrap = document.querySelector('.home-prices-section-header');
 
-  if (!pinContainer || !cardsContainer || !pinkCard || !greenCard) return;
+  if (!pinContainer || !cardsContainer || !pinkCard || !greenCard || !titleWrap) return;
 
   const mm = gsap.matchMedia();
 
@@ -292,6 +303,7 @@ const initHomePricesAnimation = () => {
       y: "100vh",
       rotation: 0
     });
+    gsap.set(titleWrap, { y: "0vh" });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -337,6 +349,12 @@ const initHomePricesAnimation = () => {
       ease: "power2.in"
     }, 1.5);
 
+    tl.to(titleWrap, {
+      y: "-100vh",
+      duration: 1.9,
+      ease: "power2.in"
+    }, 2.2);
+
     tl.to(pinkCard, {
       y: pinkExitY,
       rotation: 0,
@@ -349,10 +367,10 @@ const initHomePricesAnimation = () => {
         y: 0,
         rotation: 0
       });
+      gsap.set(titleWrap, { y: "0vh" });
     };
   });
 };
-
 
 const runHomeScripts = () => {
   initHeroAnimation();
@@ -362,6 +380,8 @@ const runHomeScripts = () => {
   initProjectScroll();
   initProjectStyles();
   initHomePricesAnimation();
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
 };
 
 if (document.readyState === "loading") {
