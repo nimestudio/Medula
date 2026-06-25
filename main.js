@@ -233,39 +233,19 @@ initWordAnimations();
 
 // Nav In / Out
 const initGlobalNav = () => {
-  console.log("NAV LOG: initGlobalNav started running.");
   const menu = document.querySelector('.menu');
   const footer = document.querySelector('.footer');
-  
-  if (!menu || !footer) {
-    console.log("NAV LOG: Failed to find elements.", { menu: !!menu, footer: !!footer });
-    return;
-  }
+  if (!menu || !footer) return;
 
-  console.log("NAV LOG: Forcing initial menu state to hidden (scale 0, opacity 0).");
   gsap.set(menu, { scale: 0, opacity: 0 });
 
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      console.log("NAV LOG: IntersectionObserver fired. Is footer intersecting?", entry.isIntersecting);
-      
       if (entry.isIntersecting) {
-        console.log("NAV LOG: Footer is visible. Hiding menu.");
         gsap.to(menu, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" });
       } else {
-        console.log("NAV LOG: Footer is hidden. Checking homepage status. window.navAllowedOnHome =", window.navAllowedOnHome);
-        
-        if (document.querySelector('.home-hero-logo') && !window.navAllowedOnHome) {
-          console.log("NAV LOG: Blocked! On homepage and timeline hasn't allowed the nav yet.");
-          return;
-        }
-        
-        console.log("NAV LOG: Conditions passed. Triggering bounce from observer.");
-        if (typeof window.executeBounce === "function") {
-          window.executeBounce(menu, 0.5);
-        } else {
-          console.log("NAV LOG: ERROR - window.executeBounce is not a function!");
-        }
+        if (document.querySelector('.home-hero-logo') && !window.navAllowedOnHome) return;
+        window.executeBounce(menu, 0.5);
       }
     });
   }, { rootMargin: "0px 0px 0px 0px" });
