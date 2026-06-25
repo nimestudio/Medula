@@ -357,7 +357,6 @@ const initHomePricesAnimation = () => {
 const runHomeScripts = () => {
   initHeroAnimation();
   initBubbleAnimations();
-  initHomeNavBehavior();
   initStickerLoadAnimations();
   initStickerTrail();
   initProjectScroll();
