@@ -1,5 +1,6 @@
 // Hero Load
 const initHeroAnimation = () => {
+  console.log("HERO LOG: initHeroAnimation started running.");
   const menu = document.querySelector('.menu');
   const logo = document.querySelector('.home-hero-logo');
   const content = document.querySelector('.home-hero-content');
@@ -7,7 +8,10 @@ const initHeroAnimation = () => {
   const sparks = document.querySelectorAll('.spike-wrap-spark');
   const weather = document.querySelector('.weather-top-wrap');
 
-  if (!logo) return;
+  if (!logo) {
+    console.log("HERO LOG: No logo found. Exiting.");
+    return;
+  }
 
   const logoRect = logo.getBoundingClientRect();
   const centerY = window.innerHeight / 2;
@@ -15,7 +19,10 @@ const initHeroAnimation = () => {
   const initialYOffset = centerY - logoCenterY;
 
   let weatherIsReady = false;
-  document.addEventListener('weatherReady', () => weatherIsReady = true);
+  document.addEventListener('weatherReady', () => {
+    console.log("HERO LOG: weatherReady event fired.");
+    weatherIsReady = true;
+  });
 
   gsap.set(logo, { y: initialYOffset, scale: 1.2, opacity: 0 });
   if (spikeWrap) gsap.set(spikeWrap, { opacity: 0, y: 30 });
@@ -81,11 +88,22 @@ const initHeroAnimation = () => {
   }
 
   heroTl.add(() => {
+    console.log("HERO LOG: Timeline end callback triggered.");
     window.navAllowedOnHome = true;
     const footer = document.querySelector('.footer');
     const footerVisible = footer && footer.getBoundingClientRect().top < window.innerHeight;
+    
+    console.log("HERO LOG: Checking callback state.", { footerVisible, menuExists: !!menu });
+    
     if (!footerVisible && menu) {
-      window.executeBounce(menu, 0.5);
+      console.log("HERO LOG: Attempting to trigger bounce directly from timeline.");
+      if (typeof window.executeBounce === "function") {
+        window.executeBounce(menu, 0.5);
+      } else {
+        console.log("HERO LOG: ERROR - window.executeBounce is not a function!");
+      }
+    } else {
+      console.log("HERO LOG: Bounce conditions not met in timeline callback.");
     }
   }, "-=0.5");
 };
