@@ -1,5 +1,6 @@
 // Hero Load
 const initHeroAnimation = () => {
+  const menu = document.querySelector('.menu');
   const logo = document.querySelector('.home-hero-logo');
   const content = document.querySelector('.home-hero-content');
   const spikeWrap = document.querySelector('.spike-wrap');
@@ -14,7 +15,7 @@ const initHeroAnimation = () => {
   const initialYOffset = centerY - logoCenterY;
 
   let weatherIsReady = false;
-document.addEventListener('weatherReady', () => weatherIsReady = true);
+  document.addEventListener('weatherReady', () => weatherIsReady = true);
 
   gsap.set(logo, { y: initialYOffset, scale: 1.2, opacity: 0 });
   if (spikeWrap) gsap.set(spikeWrap, { opacity: 0, y: 30 });
@@ -68,16 +69,49 @@ document.addEventListener('weatherReady', () => weatherIsReady = true);
   }
 
   if (weather) {
-  heroTl.add(() => {
-    if (weatherIsReady) {
-      window.animateWeatherIn();
-    } else {
-      document.addEventListener('weatherReady', () => {
+    heroTl.add(() => {
+      if (weatherIsReady) {
         window.animateWeatherIn();
-      }, { once: true });
+      } else {
+        document.addEventListener('weatherReady', () => {
+          window.animateWeatherIn();
+        }, { once: true });
+      }
+    }, "-=1");
+  }
+
+  heroTl.add(() => {
+    window.navAllowedOnHome = true;
+    const footer = document.querySelector('.footer');
+    const footerVisible = footer && footer.getBoundingClientRect().top < window.innerHeight;
+    if (!footerVisible && menu) {
+      window.executeBounce(menu, 0.5);
     }
-  }, "-=1");
-}
+  }, "-=0.5");
+};
+
+// Navbar In / Out
+const initHomeNavBehavior = () => {
+  const menu = document.querySelector('.menu');
+  if (!menu) return;
+
+  gsap.set(menu, { scale: 0, opacity: 0 });
+
+  let triggered = false;
+
+  window.addEventListener('scroll', () => {
+    const threshold = window.innerHeight * 0.3;
+    const footer = document.querySelector('.footer');
+    const footerVisible = footer && footer.getBoundingClientRect().top < window.innerHeight;
+
+    if (window.scrollY >= threshold && !triggered && !footerVisible) {
+      triggered = true;
+      window.executeBounce(menu, 0.5);
+    } else if (window.scrollY < threshold && triggered) {
+      triggered = false;
+      gsap.to(menu, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" });
+    }
+  });
 };
 
 // Hero Bubble Animation

@@ -238,14 +238,14 @@ const initGlobalNav = () => {
   const footer = document.querySelector('.footer');
   if (!menu || !footer) return;
 
+  gsap.set(menu, { scale: 0, opacity: 0 });
+
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         gsap.to(menu, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" });
       } else {
-        if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-          if (window.scrollY < window.innerHeight * 1.3) return;
-        }
+        if (document.querySelector('.home-hero-logo') && !window.navAllowedOnHome) return;
         window.executeBounce(menu, 0.5);
       }
     });
