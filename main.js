@@ -8,7 +8,7 @@ window.executeBounce = (element, duration = 1) => {
     opacity: 1,
     scale: 1,
     duration: duration,
-    ease: "elastic.out(1, 0.3)",
+    ease: "elastic.out(1.5, 0.4)",
     force3D: true
   });
 };
@@ -189,6 +189,26 @@ const initWeatherWidget = () => {
 };
 
 initWeatherWidget();
+
+// Weather API Test
+document.addEventListener('weatherReady', () => {
+  const mockStates = [
+    { state: 'sunny', temp: 26 },
+    { state: 'cloudy', temp: 21 },
+    { state: 'rain', temp: 17 },
+    { state: 'night', temp: 15 }
+  ];
+  
+  let index = 0;
+  
+  setInterval(() => {
+    const nextData = mockStates[index % mockStates.length];
+    if (typeof window.transitionWeatherTo === 'function') {
+      window.transitionWeatherTo(nextData.state, nextData.temp);
+    }
+    index++;
+  }, 5000);
+});
 
 // Text Reveal data-animation="words"
 const initWordAnimations = () => {

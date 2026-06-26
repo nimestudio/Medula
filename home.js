@@ -17,7 +17,7 @@ const initHeroAnimation = () => {
   let weatherIsReady = false;
   document.addEventListener('weatherReady', () => weatherIsReady = true);
 
-  gsap.set(logo, { y: initialYOffset, scale: 1.2, opacity: 0 });
+  gsap.set(logo, { y: initialYOffset, scale: 1.4, opacity: 0 });
   if (spikeWrap) gsap.set(spikeWrap, { opacity: 0, y: 30 });
   if (sparks.length) gsap.set(sparks, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
 
@@ -27,7 +27,7 @@ const initHeroAnimation = () => {
     opacity: 1,
     scale: 1,
     duration: 1.4,
-    ease: "elastic.out(1, 0.6)",
+    ease: "elastic.out(1.5, 0.5)",
     force3D: true
   });
 
