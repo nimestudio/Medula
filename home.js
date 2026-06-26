@@ -11,7 +11,7 @@ const initHeroAnimation = () => {
 
   const logoRect = logo.getBoundingClientRect();
   const centerY = window.innerHeight / 2;
-  const logoCenterY = logoRect.top + (logoRect.height / 2);
+  const logoCenterY = logo.offsetTop + (logo.offsetHeight / 2);
   const initialYOffset = centerY - logoCenterY;
 
   let weatherIsReady = false;
