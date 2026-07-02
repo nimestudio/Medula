@@ -297,20 +297,13 @@ const initNavMenu = () => {
   }
 
   trigger.addEventListener('click', () => {
-    document.body.style.overflow = 'hidden';
-    document.body.style.height = '100vh';
     navTl.restart();
   });
 
   const closeMenu = () => {
     navTl.pause();
     
-    const closeTl = gsap.timeline({
-      onComplete: () => {
-        document.body.style.overflow = '';
-        document.body.style.height = '';
-      }
-    });
+    const closeTl = gsap.timeline();
     const exitElements = closeBtn ? [...links, closeBtn] : [...links];
     
     closeTl.to(exitElements, {
@@ -409,9 +402,11 @@ const footerBottom = document.querySelector(".footer-bottom");
 if (footerBottom) {
   const footerLogo = footerBottom.querySelector(".footer-logo");
   if (footerLogo) {
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
     gsap.set(footerLogo, { 
       scaleY: 0.2, 
-      yPercent: 30,
+      yPercent: isMobile ? 50 : 30,
       transformOrigin: "100% 100%", 
       pointerEvents: "none" 
     });
@@ -447,53 +442,57 @@ if (footerBottom) {
 
     logoObserver.observe(footerBottom);
 
-    footerLogo.addEventListener("mouseenter", () => {
-      gsap.to(footerLogo, {
-        y: "8px",
-        ease: "back.out(1.2)",
-        duration: 0.4,
-        overwrite: "auto"
+    if (!isMobile) {
+      footerLogo.addEventListener("mouseenter", () => {
+        gsap.to(footerLogo, {
+          y: "8px",
+          ease: "back.out(1.2)",
+          duration: 0.4,
+          overwrite: "auto"
+        });
       });
-    });
 
-    footerLogo.addEventListener("mouseleave", () => {
-      gsap.to(footerLogo, {
-        y: "0px",
-        ease: "back.out(1.2)",
-        duration: 0.4,
-        overwrite: "auto"
+      footerLogo.addEventListener("mouseleave", () => {
+        gsap.to(footerLogo, {
+          y: "0px",
+          ease: "back.out(1.2)",
+          duration: 0.4,
+          overwrite: "auto"
+        });
       });
-    });
+    }
   }
 }
 
   // Button hover
-document.querySelectorAll('.button').forEach(button => {
-  let direction = -1;
-  const width = button.offsetWidth;
-  const rotationAmount = width <= 100 ? 5 : Math.max(2, 5 - ((width - 100) * 0.05));
+if (window.matchMedia('(hover: hover)').matches) {
+  document.querySelectorAll('.button').forEach(button => {
+    let direction = -1;
+    const width = button.offsetWidth;
+    const rotationAmount = width <= 100 ? 5 : Math.max(2, 5 - ((width - 100) * 0.05));
 
-  button.addEventListener('mouseenter', () => {
-    gsap.to(button, {
-      rotation: rotationAmount * direction,
-      scale: 1.02,
-      duration: 0.8,
-      ease: 'elastic.out(1.2, 0.35)',
-      overwrite: 'auto'
+    button.addEventListener('mouseenter', () => {
+      gsap.to(button, {
+        rotation: rotationAmount * direction,
+        scale: 1.02,
+        duration: 0.8,
+        ease: 'elastic.out(1.2, 0.35)',
+        overwrite: 'auto'
+      });
+      direction *= -1;
     });
-    direction *= -1;
-  });
 
-  button.addEventListener('mouseleave', () => {
-    gsap.to(button, {
-      rotation: 0,
-      scale: 1,
-      duration: 0.8,
-      ease: 'elastic.out(1.2, 0.35)',
-      overwrite: 'auto'
+    button.addEventListener('mouseleave', () => {
+      gsap.to(button, {
+        rotation: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: 'elastic.out(1.2, 0.35)',
+        overwrite: 'auto'
+      });
     });
   });
-});
+}
 
  // Bubble wrappers
 function buildPerimeterBubbles(wrapper, d, overlap) {
