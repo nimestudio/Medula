@@ -297,13 +297,20 @@ const initNavMenu = () => {
   }
 
   trigger.addEventListener('click', () => {
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100vh';
     navTl.restart();
   });
 
   const closeMenu = () => {
     navTl.pause();
     
-    const closeTl = gsap.timeline();
+    const closeTl = gsap.timeline({
+      onComplete: () => {
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+      }
+    });
     const exitElements = closeBtn ? [...links, closeBtn] : [...links];
     
     closeTl.to(exitElements, {
