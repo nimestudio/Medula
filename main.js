@@ -406,7 +406,7 @@ if (footerBottom) {
 
     gsap.set(footerLogo, { 
       scaleY: 0.2, 
-      yPercent: isMobile ? 35 : 25,
+      yPercent: isMobile ? 30 : 35,
       transformOrigin: "100% 100%", 
       pointerEvents: "none" 
     });

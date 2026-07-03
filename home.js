@@ -103,7 +103,12 @@ const initHeroAnimation = () => {
 const initBubbleAnimations = () => {
   const container = document.querySelector('.hero-bottom-bubbles');
   if (!container) return;
-  const bubbles = container.querySelectorAll('.hero-bottom-bubble');
+  
+  const allBubbles = container.querySelectorAll('.hero-bottom-bubble');
+  if (!allBubbles.length) return;
+
+  const bubbles = Array.from(allBubbles).filter(bubble => bubble.offsetParent !== null);
+
   if (!bubbles.length) return;
 
   gsap.set(bubbles, { opacity: 0, scaleY: 0.2, yPercent: 20, transformOrigin: "50% 100%" });
@@ -114,17 +119,17 @@ const initBubbleAnimations = () => {
     yPercent: 0,
     duration: 0.8,
     ease: "back.out(1.7)",
-    stagger: { each: 0.08, from: "center" },
+    stagger: { each: 0.08, from: "center", grid: "auto" },
     onComplete: () => {
       gsap.to(bubbles, {
         scaleY: 0.2,
         yPercent: 20,
         ease: "power1.inOut",
-        stagger: { each: 0.05, from: "center" },
+        stagger: { each: 0.05, from: "center", grid: "auto" },
         scrollTrigger: {
           trigger: container,
-          start: "top 75%",
-          end: "top top",
+          start: "top 60%",
+          end: "top -50%",
           scrub: true,
           invalidateOnRefresh: true
         }
@@ -362,7 +367,6 @@ const runHomeScripts = () => {
   initStickerLoadAnimations();
   initStickerTrail();
   initProjectScroll();
-  initProjectStyles();
   initHomePricesAnimation();
   ScrollTrigger.sort();
   ScrollTrigger.refresh();
