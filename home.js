@@ -264,21 +264,6 @@ const initProjectScroll = () => {
   });
 };
 
-// Dark BG Project
-const initProjectStyles = () => {
-  document.querySelectorAll('.home-project').forEach(proyecto => {
-    if (!proyecto.querySelector(':scope > .has-dark-bg')) return;
-    proyecto.style.color = '#fff';
-    proyecto.querySelectorAll('.button').forEach(el => {
-      el.style.color = '#362b22';
-      el.style.backgroundColor = '#fff';
-    });
-    proyecto.querySelectorAll('.tag').forEach(el => {
-      el.style.borderColor = 'rgba(185, 185, 185, 0.4)';
-    });
-  });
-};
-
 // Price Cards
 const initHomePricesAnimation = () => {
   const pinContainer = document.querySelector('.pin');

@@ -397,7 +397,7 @@ initNavMenu();
     }
   }
 
-  // Footer Logo Animation
+// Footer Logo Animation
 const footerBottom = document.querySelector(".footer-bottom");
 if (footerBottom) {
   const footerLogo = footerBottom.querySelector(".footer-logo");
@@ -406,7 +406,7 @@ if (footerBottom) {
 
     gsap.set(footerLogo, { 
       scaleY: 0.2, 
-      yPercent: isMobile ? 50 : 30,
+      yPercent: isMobile ? 50 : 25,
       transformOrigin: "100% 100%", 
       pointerEvents: "none" 
     });
