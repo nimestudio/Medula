@@ -235,7 +235,6 @@ const initStickerTrail = () => {
   });
 };
 
-
 // Projects Scroll
 const initProjectScroll = () => {
   const lenis = new Lenis();
