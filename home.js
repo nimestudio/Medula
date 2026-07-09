@@ -247,6 +247,13 @@ const initProjectScroll = () => {
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
 
+  document.querySelectorAll('.home-project-images-list').forEach(images => {
+    const spacer = document.createElement('div');
+    spacer.style.flex = '0 0 auto';
+    spacer.style.width = 'var(--spacing--global-padding)';
+    images.appendChild(spacer);
+  });
+
   gsap.matchMedia().add('(min-width: 300px)', () => {
     document.querySelectorAll('.home-project').forEach(section => {
       const images = section.querySelector('.home-project-images-list');
