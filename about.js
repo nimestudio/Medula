@@ -57,8 +57,11 @@ const initHeroScroll = () => {
     gsap.set(scroller, { position: "relative" });
 
     gsap.fromTo(scroller, 
-      { left: "10vw" },
+      { opacity: 0,
+        left: "10vw"
+      },
       { 
+        opacity: 1,
         left: "0vw", 
         duration: 1.6, 
         ease: "power3.out" 
