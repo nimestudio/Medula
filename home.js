@@ -23,20 +23,25 @@ const initHeroAnimation = () => {
 
   const heroTl = gsap.timeline();
 
-  heroTl.to(logo, {
-    opacity: 1,
-    scale: 1,
-    duration: 1.4,
-    ease: "elastic.out(1.5, 0.5)",
-    force3D: true
-  });
+heroTl.to(logo, {
+  scale: 1,
+  duration: 1.4,
+  ease: "elastic.out(1.5, 0.5)",
+  force3D: true
+});
 
-  heroTl.to(logo, {
-    y: 0,
-    duration: 0.6,
-    ease: "power3.inOut"
-  });
+heroTl.to(logo, {
+  opacity: 1,
+  duration: 0.5,
+  ease: "power2.out"
+}, "<");
 
+heroTl.to(logo, {
+  y: 0,
+  duration: 0.6,
+  ease: "power3.inOut"
+});
+  
   if (spikeWrap) {
     heroTl.to(spikeWrap, {
       opacity: 1,
