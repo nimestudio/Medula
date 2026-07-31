@@ -27,12 +27,17 @@ window.Webflow.push(() => {
     const heroTl = gsap.timeline();
 
     heroTl.to(logo, {
-      opacity: 1,
       scale: 1,
       duration: 1.4,
       ease: "elastic.out(1.5, 0.5)",
       force3D: true
     });
+
+    heroTl.to(logo, {
+    opacity: 1,
+    duration: 1,
+    ease: "power1.Out"
+  	}, "<");
 
     heroTl.to(logo, {
       y: 0,

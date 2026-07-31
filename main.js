@@ -1,27 +1,97 @@
-
-  var Webflow = Webflow || [];
+var Webflow = Webflow || [];
 Webflow.push(() => {
 
-  // nav scroll lock
-  const initNavbarScrollLock = () => {
-    const menu = document.querySelector(".nav-open");
-    if (!menu) return;
+// page transition
+const initPageTransitions = () => {
+  const transitionWrap = document.querySelector('.page-transition-wrap');
+  const stripe1 = document.querySelector('.stripe-1');
+  const stripe2 = document.querySelector('.stripe-2');
+  const stripe3 = document.querySelector('.stripe-3');
+  const stripe4 = document.querySelector('.stripe-4');
+  const stripe5 = document.querySelector('.stripe-5');
 
-    const checkScrollLock = () => {
-      const isOpen = window.getComputedStyle(menu).display !== "none";
-      if (isOpen) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
+  if (!transitionWrap) return;
+
+  const currentPath = window.location.pathname;
+  const isHome = currentPath === '/' || currentPath === '/index.html';
+  
+  const navEntries = performance.getEntriesByType("navigation");
+  const isBackForward = navEntries.length > 0 && navEntries[0].type === "back_forward";
+
+  if (isHome || isBackForward) {
+    gsap.set(transitionWrap, { display: 'none' });
+  } else {
+    gsap.set(transitionWrap, { display: 'block', opacity: 1 });
+    gsap.set([stripe1, stripe2, stripe3, stripe4], { yPercent: 100 });
+    gsap.set(stripe5, { yPercent: 0 });
+
+    gsap.to(transitionWrap, {
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => {
+        gsap.set(transitionWrap, { display: 'none' });
       }
-    };
+    });
+  }
 
-    const observer = new MutationObserver(checkScrollLock);
-    observer.observe(menu, { attributes: true, attributeFilter: ["style", "class"] });
-  };
+  document.querySelectorAll('a:not(.excluded-class)').forEach(link => {
+    link.addEventListener('click', function (e) {
+      const targetUrl = this.getAttribute('href');
 
-  initNavbarScrollLock();
+      if (!targetUrl || targetUrl.startsWith('#')) return;
 
+      if (this.hostname === window.location.hostname && this.target !== '_blank') {
+        e.preventDefault();
+
+        const isTargetHome = targetUrl === '/' || targetUrl === '/index.html';
+
+        if (isTargetHome) {
+          window.location.href = targetUrl;
+          return;
+        }
+
+        gsap.set(transitionWrap, { display: 'block', opacity: 1 });
+        gsap.set([stripe1, stripe2, stripe3, stripe4, stripe5], { yPercent: 100 });
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            const navOpen = document.querySelector('.nav-open');
+            if (navOpen) {
+              gsap.set(navOpen, { display: 'none', opacity: 0 });
+            }
+            document.body.style.overflow = "";
+            window.location.href = targetUrl;
+          }
+        });
+
+        tl.to(stripe1, { yPercent: 0, duration: 1, ease: 'power3.out' }, 0)
+          .to(stripe2, { yPercent: 0, duration: 1.1, ease: 'power3.out' }, 0.15)
+          .to(stripe3, { yPercent: 0, duration: 1.2, ease: 'power3.out' }, 0.3)
+          .to(stripe4, { yPercent: 0, duration: 1.3, ease: 'power3.out' }, 0.45)
+          .to(stripe5, { yPercent: 0, duration: 1.4, ease: 'power3.out' }, 0.6);
+      }
+    });
+  });
+};
+
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted) {
+    const transitionWrap = document.querySelector('.page-transition-wrap');
+    if (transitionWrap) {
+      gsap.set(transitionWrap, { display: 'none' });
+    }
+    
+    const navOpen = document.querySelector('.nav-open');
+    if (navOpen) {
+      gsap.set(navOpen, { display: 'none', opacity: 0 });
+    }
+    document.body.style.overflow = "";
+  }
+});
+
+initPageTransitions();
+
+// global bounce load
   window.executeBounce = (element, duration = 1) => {
     if (!element) return;
     gsap.set(element, { opacity: 0, scale: 0.5 });
@@ -34,7 +104,6 @@ Webflow.push(() => {
     });
   };
 
-    // global bounce load
   const initGlobalAnimations = () => {
     document.querySelectorAll('[data-animation="bounce-in"][data-trigger="load"]').forEach(el => {
       window.executeBounce(el);
@@ -57,7 +126,7 @@ Webflow.push(() => {
     initGlobalAnimations();
   });
 
-    // weather widget
+  // weather widget
   const initWeatherWidget = () => {
     const ICONS = {
       sunny:  'https://cdn.prod.website-files.com/6a327748f2e1175631dd266e/6a3548133d66ff59e85a5921_sunny.svg',
@@ -253,7 +322,7 @@ Webflow.push(() => {
 
   initWordAnimations();
 
-  // nav enter
+  // nav vs footer interaction
   const initGlobalNav = () => {
     const menu = document.querySelector('.menu');
     const footer = document.querySelector('.footer');
@@ -277,109 +346,114 @@ Webflow.push(() => {
 
   initGlobalNav();
 
-  // nav open and close
-  const initNavMenu = () => {
-    const trigger = document.querySelector('.nav-menu-trigger');
-    const navOpen = document.querySelector('.nav-open');
-    const closeBtn = document.querySelector('.nav-open-close');
-    
-    if (!trigger || !navOpen) return;
-    
-    const links = navOpen.querySelectorAll('.nav-open-link');
+// navmenu open and close
+const initNavMenu = () => {
+  const trigger = document.querySelector('.nav-menu-trigger');
+  const navOpen = document.querySelector('.nav-open');
+  const closeBtn = document.querySelector('.nav-open-close');
+  
+  if (!trigger || !navOpen) return;
+  
+  const links = navOpen.querySelectorAll('.nav-open-link');
 
-    links.forEach(link => {
-      link._baseRotation = gsap.getProperty(link, "rotation") || 0;
-    });
+  links.forEach(link => {
+    link._baseRotation = gsap.getProperty(link, "rotation") || 0;
+  });
 
-    const navTl = gsap.timeline({ paused: true });
-    
-    navTl.set(links, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
-    if (closeBtn) {
-      navTl.set(closeBtn, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
-    }
+  const navTl = gsap.timeline({ paused: true });
+  
+  navTl.set(links, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
+  if (closeBtn) {
+    navTl.set(closeBtn, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
+  }
 
-    navTl.to(navOpen, { display: 'flex', opacity: 1, duration: 0.3, ease: 'power2.out' });
-    navTl.to(links, {
+  navTl.to(navOpen, { display: 'flex', opacity: 1, duration: 0.3, ease: 'power2.out' });
+  navTl.to(links, {
+    opacity: 1,
+    scale: 1,
+    duration: 1.2,
+    ease: "elastic.out(1, 0.5)",
+    stagger: 0.15,
+    force3D: true
+  }, 0.15);
+
+  if (closeBtn) {
+    navTl.to(closeBtn, {
       opacity: 1,
       scale: 1,
       duration: 1.2,
       ease: "elastic.out(1, 0.5)",
-      stagger: 0.15,
       force3D: true
-    }, 0.15);
+    }, "-=0.6");
+  }
 
-    if (closeBtn) {
-      navTl.to(closeBtn, {
-        opacity: 1,
-        scale: 1,
-        duration: 1.2,
-        ease: "elastic.out(1, 0.5)",
-        force3D: true
-      }, "-=0.6");
-    }
+  trigger.addEventListener('click', () => {
+    document.body.style.overflow = "hidden";
+    navTl.restart();
+  });
 
-    trigger.addEventListener('click', () => {
-      navTl.restart();
-    });
-
-    const closeMenu = () => {
-      navTl.pause();
-      
-      const closeTl = gsap.timeline();
-      const exitElements = closeBtn ? [...links, closeBtn] : [...links];
-      
-      closeTl.to(exitElements, {
-        scale: 0.5,
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.inOut"
-      });
-      
-      closeTl.to(navOpen, {
-        opacity: 0,
-        display: 'none',
-        duration: 0.3,
-        ease: "power2.out"
-      }, 0.25);
-    };
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeMenu();
-      });
-    }
-
-    navOpen.addEventListener('click', (e) => {
-      if (e.target === navOpen) {
-        closeMenu();
+  const closeMenu = () => {
+    navTl.pause();
+    
+    const closeTl = gsap.timeline({
+      onComplete: () => {
+        document.body.style.overflow = "";
       }
     });
-
-    if (window.matchMedia("(min-width: 992px)").matches) {
-      links.forEach(link => {
-        link.addEventListener('mouseenter', () => {
-          gsap.to(link, { 
-            rotation: link._baseRotation + 6, 
-            duration: 0.6, 
-            ease: "elastic.out(1, 0.4)", 
-            overwrite: "auto" 
-          });
-        });
-        
-        link.addEventListener('mouseleave', () => {
-          gsap.to(link, { 
-            rotation: link._baseRotation, 
-            duration: 0.4, 
-            ease: "power2.out", 
-            overwrite: "auto" 
-          });
-        });
-      });
-    }
+    const exitElements = closeBtn ? [...links, closeBtn] : [...links];
+    
+    closeTl.to(exitElements, {
+      scale: 0.5,
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut"
+    });
+    
+    closeTl.to(navOpen, {
+      opacity: 0,
+      display: 'none',
+      duration: 0.3,
+      ease: "power2.out"
+    }, 0.25);
   };
 
-  initNavMenu();
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMenu();
+    });
+  }
+
+  navOpen.addEventListener('click', (e) => {
+    if (e.target === navOpen) {
+      closeMenu();
+    }
+  });
+
+  if (window.matchMedia("(min-width: 992px)").matches) {
+    links.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        gsap.to(link, { 
+          rotation: link._baseRotation + 6, 
+          duration: 0.6, 
+          ease: "elastic.out(1, 0.4)", 
+          overwrite: "auto" 
+        });
+      });
+      
+      link.addEventListener('mouseleave', () => {
+        gsap.to(link, { 
+          rotation: link._baseRotation, 
+          duration: 0.4, 
+          ease: "power2.out", 
+          overwrite: "auto" 
+        });
+      });
+    });
+  }
+};
+
+initNavMenu();
 
   // footer bubbles animation
   const footerBubblesContainer = document.querySelector('.footer-bubbles');
@@ -444,7 +518,7 @@ Webflow.push(() => {
             gsap.to(footerLogo, {
               scaleY: 1,
               transformOrigin: "100% 100%",
-              ease: "back.out(1.4)",
+              ease: "elastic.out(1.5, 0.5)",
               duration: 0.8,
               overwrite: "auto"
             });
@@ -597,9 +671,173 @@ Webflow.push(() => {
     });
   }
 
-  // footer year update
+// footer year update
   const yearEl = document.querySelector('#current-year');
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
   }
 });
+
+
+// cookies manager
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  function setConsentCookie(name, value, days = 365) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+  }
+
+  function getConsentCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  function loadGTM() {
+    if (window.gtmLoaded) return;
+    window.gtmLoaded = true;
+    const script = document.createElement('script');
+    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KNLDM4HJ');`;
+    document.head.appendChild(script);
+  }
+
+  function loadFacebookPixel() {
+    if (window.fbPixelLoaded) return;
+    window.fbPixelLoaded = true;
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '853146200615308');
+    fbq('track', 'PageView');
+  }
+
+  const analyticsConsent = getConsentCookie("consent_analytics");
+  const marketingConsent = getConsentCookie("consent_marketing");
+
+  gtag('consent', 'default', {
+    'ad_storage': marketingConsent === 'accepted' ? 'granted' : 'denied',
+    'ad_user_data': marketingConsent === 'accepted' ? 'granted' : 'denied',
+    'ad_personalization': marketingConsent === 'accepted' ? 'granted' : 'denied',
+    'analytics_storage': analyticsConsent === 'accepted' ? 'granted' : 'denied'
+  });
+
+  loadGTM();
+
+  window.addEventListener("load", function () {
+    const banner = document.getElementById("cookie-banner");
+    const prefs = document.getElementById("cookie-preferences");
+
+    if (marketingConsent === "accepted") loadFacebookPixel();
+
+    if (!analyticsConsent && !marketingConsent) {
+      setTimeout(() => {
+        banner.style.display = "flex";
+        setTimeout(() => {
+          banner.style.opacity = "1";
+          banner.style.transform = "scale(1)";
+        }, 50);
+      }, 5000);
+    }
+
+    document.getElementById("accept-all").onclick = () => {
+      setConsentCookie("consent_analytics", "accepted");
+      setConsentCookie("consent_marketing", "accepted");
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted'
+      });
+      loadFacebookPixel();
+      banner.style.display = "none";
+    };
+
+    document.getElementById("decline-all").onclick = () => {
+      setConsentCookie("consent_analytics", "declined");
+      setConsentCookie("consent_marketing", "declined");
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+      banner.style.display = "none";
+    };
+
+    document.getElementById("only-necessary").onclick = () => {
+      setConsentCookie("consent_analytics", "declined");
+      setConsentCookie("consent_marketing", "declined");
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+      document.getElementById("analytics-consent").checked = false;
+      document.getElementById("marketing-consent").checked = false;
+      prefs.style.opacity = "0";
+      if (banner) banner.style.display = "none";
+      setTimeout(() => {
+        prefs.style.display = "none";
+      }, 300);
+    };
+
+    document.getElementById("open-preferences").onclick = () => {
+      const currentAnalytics = getConsentCookie("consent_analytics");
+      const currentMarketing = getConsentCookie("consent_marketing");
+      document.getElementById("analytics-consent").checked = currentAnalytics === "accepted";
+      document.getElementById("marketing-consent").checked = currentMarketing === "accepted";
+      if (banner) banner.style.display = "none";
+      prefs.style.display = "flex";
+      setTimeout(() => prefs.style.opacity = "1", 50);
+    };
+
+    const manageBtn = document.getElementById("manage-preferences");
+    if (manageBtn) {
+      manageBtn.onclick = (e) => {
+        e.preventDefault();
+        const currentAnalytics = getConsentCookie("consent_analytics");
+        const currentMarketing = getConsentCookie("consent_marketing");
+        document.getElementById("analytics-consent").checked = currentAnalytics === "accepted";
+        document.getElementById("marketing-consent").checked = currentMarketing === "accepted";
+        prefs.style.display = "flex";
+        setTimeout(() => prefs.style.opacity = "1", 50);
+      };
+    }
+
+    document.getElementById("save-preferences").onclick = () => {
+      const analytics = document.getElementById("analytics-consent").checked ? "accepted" : "declined";
+      const marketing = document.getElementById("marketing-consent").checked ? "accepted" : "declined";
+
+      setConsentCookie("consent_analytics", analytics);
+      setConsentCookie("consent_marketing", marketing);
+
+      gtag('consent', 'update', {
+        'ad_storage': marketing === 'accepted' ? 'granted' : 'denied',
+        'ad_user_data': marketing === 'accepted' ? 'granted' : 'denied',
+        'ad_personalization': marketing === 'accepted' ? 'granted' : 'denied',
+        'analytics_storage': analytics === 'accepted' ? 'granted' : 'denied'
+      });
+
+      if (marketing === "accepted") loadFacebookPixel();
+
+      prefs.style.opacity = "0";
+      if (banner) banner.style.display = "none";
+      setTimeout(() => {
+        prefs.style.display = "none";
+      }, 300);
+    };
+  });
